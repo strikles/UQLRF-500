@@ -5,4 +5,4 @@ Karplus-Strong VST
 #### "So that the Fibers are able to sing"
 in memory of my grandparents and St. John the Baptist
 
-Deus Caritas Est
+**_Deus Caritas Est_**
