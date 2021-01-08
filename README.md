@@ -6,3 +6,5 @@ Karplus-Strong VST
 in memory of my grandparents and St. John the Baptist
 
 **_Deus Caritas Est_**
+
+[https://crypto.stanford.edu/~blynn/sound/karplusstrong.html](https://crypto.stanford.edu/~blynn/sound/karplusstrong.html)
