@@ -5,6 +5,6 @@ Karplus-Strong VST
 #### "So that the Fibers are able to sing"
 in memory of my grandparents and St. John the Baptist
 
-**_Deus Caritas Est_**
+**_Deus Caritas Est_** <3
 
 [https://crypto.stanford.edu/~blynn/sound/karplusstrong.html](https://crypto.stanford.edu/~blynn/sound/karplusstrong.html)
