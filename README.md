@@ -2,7 +2,17 @@
 Karplus-Strong VST
 
 ## [Ut Queant Laxis Resonare Fibris](https://en.wikipedia.org/wiki/Ut_queant_laxis)
-#### "So that the Fibers are able to sing"
+
+Ut queant laxīs
+resonāre fibrīs
+Mīra gestōrum
+famulī tuōrum,
+Solve pollūtī
+labiī reātum,
+Sāncte Iōhannēs.
+
+It may be translated: So that your servants may, with loosened voices, resound the wonders of your deeds, clean the guilt from our stained lips, O Saint John.
+
 in memory of my grandparents and St. John the Baptist
 
 **_Deus Caritas Est_** <3
