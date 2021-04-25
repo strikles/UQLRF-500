@@ -2,10 +2,26 @@
 extern crate vst;
 extern crate rand;
 
-use vst::plugin::{Info, Plugin, PluginParameters, Category, CanDo};
-use vst::buffer::AudioBuffer;
-use vst::event::Event;
-use vst::api::{Events, Supported};
+use std::{convert::TryFrom, sync::Arc};
+
+use vst::{
+    api::{Events, Supported},
+    buffer::AudioBuffer,
+    editor::Editor,
+    plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
+};
+use wmidi::MidiMessage;
+
+use params::{
+    CountedEnum, EnvelopeParams, ModBankEnvs, ModulationBank, ModulationSend, ModulationType,
+    OSCParams, ParameterType, Parameters, RawParameters,
+};
+use sound_gen::{
+    normalize_U7, normalize_pitch_bend, to_pitch_envelope, NormalizedPitchbend, SampleRate,
+    SoundGenerator,
+};
+use ui::UIFrontEnd;
+
 use rand::random;
 
 #[derive(Default)]
