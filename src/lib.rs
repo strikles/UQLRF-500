@@ -161,7 +161,7 @@ impl Plugin for Karplus {
 impl PluginParameters for KarplusParameters {
     fn get_parameter(&self, index: i32) -> f32 {
         match index {
-            0 => self.freequency.get(),
+            0 => self.frequency.get(),
             1 => self.gain.get(),
             _ => 0.0,
         }
