@@ -2,12 +2,12 @@
 extern crate vst;
 extern crate rand;
 
-use std::{convert::TryFrom, sync::Arc, ops::Deref};
+use std::{sync::Arc, ops::Deref};
 
 use vst::{
     api::{Events, Supported},
     buffer::AudioBuffer,
-    editor::Editor,
+    //editor::Editor,
     event::Event,
     plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
     util::AtomicFloat
@@ -135,10 +135,10 @@ impl Plugin for Karplus {
             // Sum up all the different notes and noise types
             if !self.notes.is_empty() {
                 let mut signal = 0.0;
-                let params = self.params.deref();
+                let _params = self.params.deref();
 
                 for note in &self.notes {
-                    let point = [0.0, self.time * midi_pitch_to_freq(note.note)];
+                    let _point = [0.0, self.time * midi_pitch_to_freq(note.note)];
 
                     if note.alpha > 0.0001 {
                         signal += ((random::<f64>() - 0.5) * 2.0) as f64 * note.alpha;
