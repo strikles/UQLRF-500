@@ -75,10 +75,10 @@ impl Plugin for Karplus {
                     match ev.data[0] {
 
                         // if note on, increment our counter
-                        144 => self.notes += 1u8,
+                        144 => self.params.notes += 1u8,
 
                         // if note off, decrement our counter
-                        128 => self.notes -= 1u8,
+                        128 => self.params.notes -= 1u8,
                         _ => (),
                     }
                     // if we cared about the pitch of the note, it's stored in `ev.data[1]`.
