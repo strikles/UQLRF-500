@@ -2,7 +2,7 @@
 extern crate vst;
 extern crate rand;
 
-use vst::plugin::{Info, Plugin, Category, CanDo};
+use vst::plugin::{Info, Plugin, PluginParameters, Category, CanDo};
 use vst::buffer::AudioBuffer;
 use vst::event::Event;
 use vst::api::{Events, Supported};
