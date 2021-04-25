@@ -26,7 +26,7 @@ impl Default for Karplus {
         Karplus {
             frequency: 440.0,
             sample_rate: 44190,
-            vec![1.0, 0.0];
+            vec![1.0, 0.0]
         }
     }
 }
