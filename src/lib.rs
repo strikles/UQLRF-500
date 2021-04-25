@@ -40,6 +40,16 @@ impl Plugin for Karplus {
         }
     }
     
+    fn new(host: HostCallback) -> Self {
+        Revisit {
+            params: Arc::new(RawParameters {
+                host,
+                ..Default::default()
+            }),
+            ..Default::default()
+        }
+    }
+    
     // Here's the function that allows us to receive events
     fn process_events(&mut self, events: &Events) {
 
