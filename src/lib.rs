@@ -2,7 +2,7 @@
 extern crate vst;
 extern crate rand;
 
-use std::{convert::TryFrom, sync::Arc. ops::Deref};
+use std::{convert::TryFrom, sync::Arc, ops::Deref};
 
 use vst::{
     api::{Events, Supported},
