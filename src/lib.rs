@@ -30,6 +30,11 @@ struct Karplus {
     sample_rate: u32,
     buffer: Vec<f32>,
     notes: u8
+    /// The parameters which are shared with the VST host
+    params: Arc<RawParameters>,
+    /// If true, then the GUI has been initalized and `get_editor()` will return
+    /// None.
+    gui_initialized: bool,
 }
 
 /*
