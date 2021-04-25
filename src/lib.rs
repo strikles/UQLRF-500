@@ -8,7 +8,6 @@ use vst::event::Event;
 use vst::api::{Events, Supported};
 use rand::random;
 
-#[derive(Default)]
 struct Karplus {
     frequency: f32,
     sample_rate: u32,
