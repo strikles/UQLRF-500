@@ -1,5 +1,5 @@
 extern crate rand;
-extern crate vst2;
+extern crate vst;
 
 use rand::Rng;
 use std::fmt;
