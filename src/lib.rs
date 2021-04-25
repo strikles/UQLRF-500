@@ -26,6 +26,7 @@ struct KarplusParameters {
     gain: AtomicFloat,
     sample_rate: u32,
     notes: u8,
+    host: HostCallback
 }
 
 impl Plugin for Karplus {
