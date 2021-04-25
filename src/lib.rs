@@ -8,6 +8,7 @@ use vst::event::Event;
 use vst::api::{Events, Supported};
 use rand::random;
 
+#[derive(Default)]
 struct Karplus {
     frequency: f32,
     sample_rate: u32,
@@ -22,18 +23,6 @@ impl fmt::Display for Karplus {
     }
 }
 */
-
-impl Default for Karplus {
-    
-    fn default() -> Self {
-        Karplus {
-            frequency: 440.0,
-            sample_rate: 44190,
-            buffer: vec![1.0, 0.0]
-        }
-    }
-}
-
 
 impl Plugin for Karplus {
     
