@@ -21,16 +21,13 @@ impl fmt::Display for Karplus {
 }
 
 impl Default for Karplus {
+    
     fn default() -> Self {
         Karplus {
             frequency: 440.0,
             sample_rate: 44100
         }
     }
-}
-
-
-impl Plugin for Karplus {
     
     fn new(frequency: f32, sample_rate: u32) -> Karplus {
         let size = (sample_rate as f32 / frequency) as usize;
@@ -53,6 +50,10 @@ impl Plugin for Karplus {
         self.buffer.push(s);
         s
     }
+}
+
+
+impl Plugin for Karplus {
     
     fn get_info(&self) -> Info {
         Info {
@@ -62,34 +63,15 @@ impl Plugin for Karplus {
 
             inputs: 2,
             outputs: 2,
-            parameters: 2,
+            parameters: 1,
 
             ..Info::default()
         }
     }
+}
 
-    fn get_parameter_label(&self, index: i32) -> String {
-        match index {
-            0 => "%".to_string(),
-            _ => "".to_string(),
-        }
-    }
-
-    fn get_parameter_text(&self, index: i32) -> String {
-        match index {
-            0 => format!("{}", self.frequency),
-            _ => "".to_string(),
-        }
-    }
-
-    fn get_parameter_name(&self, index: i32) -> String {
-        match index {
-            0 => "Frequency".to_string(),
-            _ => "".to_string(),
-        }
-
-    }
-
+impl PluginParameters for Karplus {
+    
     fn get_parameter(&self, index: i32) -> f32 {
         match index {
             0 => self.frequency,
@@ -97,22 +79,33 @@ impl Plugin for Karplus {
         }
     }
 
-    fn set_parameter(&mut self, index: i32, value: f32) {
-        match index {
-            0 => self.frequency = value.max(0.01),
-            _ => (),
-        };
+    fn set_parameter(&self, index: i32, value: f32) {
+        //        match index {
+        //            // We don't want to divide by zero, so we'll clamp the value
+        //            0 => self.threshold = value.max(0.01),
+        //            _ => (),
+        //        }
     }
 
-    fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
-        for (input, output) in buffer.zip() {
-            // For each input sample and output sample in buffer
-            for (in_frame, out_frame) in input.into_iter().zip(output.into_iter()) {
-                if *in_frame >= 0.0 {
-                    let k = Karplus::new(self.frequency, self.sample_rate);
-                    *out_frame = in_frame.min(self.frequency)
-                }
-            }
+    fn get_parameter_name(&self, index: i32) -> String {
+        match index {
+            0 => "Frequency".to_string(),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_parameter_text(&self, index: i32) -> String {
+        match index {
+            // Convert to a percentage
+            0 => format!("{}", self.frequency),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_parameter_label(&self, index: i32) -> String {
+        match index {
+            0 => "%".to_string(),
+            _ => "".to_string(),
         }
     }
 }
