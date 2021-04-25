@@ -28,6 +28,24 @@ impl Default for Karplus {
             sample_rate: 44100
         }
     }
+}
+
+
+impl Plugin for Karplus {
+    
+    fn get_info(&self) -> Info {
+        Info {
+            name: "UQLRF".to_string(),
+            vendor: "strikles".to_string(),
+            unique_id: 999,
+
+            inputs: 2,
+            outputs: 2,
+            parameters: 1,
+
+            ..Info::default()
+        }
+    }
     
     fn new(frequency: f32, sample_rate: u32) -> Karplus {
         let size = (sample_rate as f32 / frequency) as usize;
@@ -49,24 +67,6 @@ impl Default for Karplus {
 
         self.buffer.push(s);
         s
-    }
-}
-
-
-impl Plugin for Karplus {
-    
-    fn get_info(&self) -> Info {
-        Info {
-            name: "UQLRF".to_string(),
-            vendor: "strikles".to_string(),
-            unique_id: 999,
-
-            inputs: 2,
-            outputs: 2,
-            parameters: 1,
-
-            ..Info::default()
-        }
     }
 }
 
