@@ -98,7 +98,7 @@ impl Plugin for Karplus {
 
         // We only want to process *anything* if a note is being held.
         // Else, we can fill the output buffer with silence.
-        if self.notes == 0 {
+        if self.params.notes == 0 {
             for output_channel in output_buffer.into_iter() {
                 // Let's iterate over every sample in our channel.
                 for output_sample in output_channel {
