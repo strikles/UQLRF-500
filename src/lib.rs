@@ -22,8 +22,8 @@ struct Karplus {
 
 #[derive(Default)]
 struct KarplusParameters {
-    frequency: f32,
-    gain: f32,
+    frequency: AtomicFloat,
+    gain: AtomicFloat,
     sample_rate: u32,
     notes: u8,
 }
