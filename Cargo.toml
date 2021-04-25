@@ -10,4 +10,4 @@ license = "MIT"
 
 [dependencies]
 rand = "0.3.14"
-vst2 = "0.0.1"
+vst = "0.0.2"
