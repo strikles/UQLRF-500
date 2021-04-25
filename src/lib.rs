@@ -32,7 +32,6 @@ struct Karplus {
 
 #[derive(Default)]
 struct KarplusParameters {
-    frequency: AtomicFloat,
     gain: AtomicFloat,
     attack_duration: AtomicFloat,
     release_duration: AtomicFloat,
@@ -69,6 +68,10 @@ impl Plugin for Karplus {
         Arc::clone(&self.params) as Arc<dyn PluginParameters>
     }
     
+    fn set_sample_rate(&mut self, rate: f32) {
+        self.sample_rate = rate;
+    }
+    
     fn new(host: HostCallback) -> Self {
         Karplus {
             params: Arc::new(KarplusParameters {
@@ -103,10 +106,6 @@ impl Plugin for Karplus {
         }
     }
 
-    fn set_sample_rate(&mut self, rate: f32) {
-        self.sample_rate = rate;
-    }
-    
     fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
         let samples = buffer.samples();
         let (_, mut outputs) = buffer.split();
@@ -115,7 +114,6 @@ impl Plugin for Karplus {
         let per_sample = (1.0 / self.sample_rate) as f64;
         let attack_per_sample = per_sample * (1.0 / self.params.attack_duration.get() as f64);
         let release_per_sample = per_sample * (1.0 / self.params.release_duration.get() as f64);
-
 
         let mut output_sample;
         for sample_idx in 0..samples {
@@ -161,18 +159,6 @@ impl Plugin for Karplus {
         }
     }
 
-    // It's good to tell our host what our plugin can do.
-    // Some VST hosts might not send any midi events to our plugin
-    // if we don't explicitly tell them that the plugin can handle them.
-    fn can_do(&self, can_do: CanDo) -> Supported {
-        match can_do {
-            // Tell our host that the plugin supports receiving MIDI messages
-            CanDo::ReceiveMidiEvent => Supported::Yes,
-            // Maybe it also supports ather things
-            _ => Supported::Maybe,
-        }
-    }
-
     /*
     fn new(frequency: f32, sample_rate: u32) -> Karplus {
         let size = (sample_rate as f32 / frequency) as usize;
@@ -196,13 +182,26 @@ impl Plugin for Karplus {
         s
     }
     */
+
+    // It's good to tell our host what our plugin can do.
+    // Some VST hosts might not send any midi events to our plugin
+    // if we don't explicitly tell them that the plugin can handle them.
+    fn can_do(&self, can_do: CanDo) -> Supported {
+        match can_do {
+            // Tell our host that the plugin supports receiving MIDI messages
+            CanDo::ReceiveMidiEvent => Supported::Yes,
+            // Maybe it also supports ather things
+            _ => Supported::Maybe,
+        }
+    }
 }
 
 impl PluginParameters for KarplusParameters {
     fn get_parameter(&self, index: i32) -> f32 {
         match index {
-            0 => self.frequency.get(),
-            1 => self.gain.get(),
+            0 => self.gain.get(),
+            1 => self.attack_duration.get(),
+            2 => self.release_duration.get(),
             _ => 0.0,
         }
     }
@@ -210,24 +209,27 @@ impl PluginParameters for KarplusParameters {
     fn set_parameter(&self, index: i32, value: f32) {
         #[allow(clippy::single_match)]
         match index {
-            0 => self.frequency.set(value.max(0.01)),
-            1 => self.gain.set(value),
+            0 => self.gain.set(value),
+            1 => self.attack_duration.set(value),
+            2 => self.release_duration.set(value),
             _ => (),
         }
     }
 
     fn get_parameter_name(&self, index: i32) -> String {
         match index {
-            0 => "Frequency".to_string(),
-            1 => "Gain".to_string(),
+            0 => "Gain".to_string(),
+            1 => "Attack".to_string(),
+            2 => "Release".to_string(),
             _ => "".to_string(),
         }
     }
 
     fn get_parameter_text(&self, index: i32) -> String {
         match index {
-            0 => format!("{:.2}", self.frequency.get()),
-            1 => format!("{:.2}", self.gain.get()),
+            0 => format!("{:.2}", self.gain.get()),
+            1 => format!("{:.2}", self.attack_duration.get()),
+            2 => format!("{:.2}", self.release_duration.get()),
             _ => "".to_string(),
         }
     }
