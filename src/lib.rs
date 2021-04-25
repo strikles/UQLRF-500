@@ -116,7 +116,7 @@ impl Plugin for Karplus {
     }
 }
 
-plugin_main!(DigiDist);
+plugin_main!(Karplus);
 
 #[cfg(test)]
 mod tests {
