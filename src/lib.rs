@@ -8,6 +8,7 @@ use vst::{
     api::{Events, Supported},
     buffer::AudioBuffer,
     editor::Editor,
+    event::Event,
     plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
 };
 
