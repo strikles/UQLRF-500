@@ -15,11 +15,13 @@ struct Karplus {
     buffer: Vec<f32>
 }
 
+/*
 impl fmt::Display for Karplus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {})", self.frequency, self.sample_rate)
     }
 }
+*/
 
 impl Default for Karplus {
     
