@@ -17,7 +17,8 @@ use rand::random;
 
 #[derive(Default)]
 struct Karplus {
-        params: Arc<KarplusParameters>
+        params: Arc<KarplusParameters>,
+        notes: u8
 }
 
 #[derive(Default)]
@@ -25,7 +26,6 @@ struct KarplusParameters {
     frequency: AtomicFloat,
     gain: AtomicFloat,
     sample_rate: u32,
-    notes: u8,
     host: HostCallback
 }
 
@@ -76,10 +76,10 @@ impl Plugin for Karplus {
                     match ev.data[0] {
 
                         // if note on, increment our counter
-                        144 => self.params.notes += 1u8,
+                        144 => self.notes += 1u8,
 
                         // if note off, decrement our counter
-                        128 => self.params.notes -= 1u8,
+                        128 => self.notes -= 1u8,
                         _ => (),
                     }
                     // if we cared about the pitch of the note, it's stored in `ev.data[1]`.
@@ -99,7 +99,7 @@ impl Plugin for Karplus {
 
         // We only want to process *anything* if a note is being held.
         // Else, we can fill the output buffer with silence.
-        if self.params.notes == 0 {
+        if self.notes == 0 {
             for output_channel in output_buffer.into_iter() {
                 // Let's iterate over every sample in our channel.
                 for output_sample in output_channel {
