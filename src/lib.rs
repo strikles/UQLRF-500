@@ -34,6 +34,8 @@ struct Karplus {
 struct KarplusParameters {
     frequency: AtomicFloat,
     gain: AtomicFloat,
+    attack_duration: AtomicFloat,
+    release_duration: AtomicFloat
     host: HostCallback
 }
 
@@ -118,7 +120,6 @@ impl Plugin for Karplus {
         let mut output_sample;
         for sample_idx in 0..samples {
 
-
             // Update the alpha of each note...
             for note in self.notes.iter_mut() {
                 if !note.is_released && note.alpha < 1.0 {
@@ -133,7 +134,6 @@ impl Plugin for Karplus {
             // ...and remove finished notes.
             self.notes.retain(|n| n.alpha > 0.0);
 
-
             // Sum up all the different notes and noise types
             if !self.notes.is_empty() {
                 let mut signal = 0.0;
@@ -143,7 +143,7 @@ impl Plugin for Karplus {
                     let point = [0.0, self.time * midi_pitch_to_freq(note.note)];
 
                     if note.alpha > 0.0001 {
-                        signal += ((random::<f64>() - 0.5) * 2.0 as f64 * note.alpha;
+                        signal += ((random::<f64>() - 0.5) * 2.0) as f64 * note.alpha;
                     }
                 }
 
