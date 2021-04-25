@@ -61,7 +61,7 @@ impl Plugin for Karplus {
         }
     }
 
-    fn sample(&mut self, damping: f32) -> f32 {
+    fn process(&mut self, damping: f32) -> f32 {
         let v: f32 = self.buffer.remove(0);
         let s: f32 = (v + self.buffer[0])*0.5 * damping;
 
