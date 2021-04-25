@@ -2,7 +2,7 @@
 extern crate vst;
 extern crate rand;
 
-use std::{convert::TryFrom, sync::Arc};
+use std::{convert::TryFrom, sync::Arc. ops::Deref};
 
 use vst::{
     api::{Events, Supported},
@@ -35,7 +35,7 @@ struct KarplusParameters {
     frequency: AtomicFloat,
     gain: AtomicFloat,
     attack_duration: AtomicFloat,
-    release_duration: AtomicFloat
+    release_duration: AtomicFloat,
     host: HostCallback
 }
 
