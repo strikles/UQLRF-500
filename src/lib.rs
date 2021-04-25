@@ -25,7 +25,8 @@ impl Default for Karplus {
     fn default() -> Self {
         Karplus {
             frequency: 440.0,
-            sample_rate: 44100
+            sample_rate: 44100,
+            Vec::with_capacity(44100 * 440.0);
         }
     }
 }
