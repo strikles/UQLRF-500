@@ -11,7 +11,8 @@ use rand::random;
 struct Karplus {
     frequency: f32,
     sample_rate: u32,
-    buffer: Vec<f32>
+    buffer: Vec<f32>,
+    notes: u8
 }
 
 /*
