@@ -41,7 +41,7 @@ impl Plugin for Karplus {
     }
     
     fn new(host: HostCallback) -> Self {
-        Revisit {
+        Karplus {
             params: Arc::new(RawParameters {
                 host,
                 ..Default::default()
