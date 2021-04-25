@@ -10,27 +10,23 @@ use vst::{
     editor::Editor,
     event::Event,
     plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
+    util::AtomicFloat
 };
 
 use rand::random;
 
 #[derive(Default)]
 struct Karplus {
-    frequency: f32,
-    sample_rate: u32,
-    buffer: Vec<f32>,
-    notes: u8,
-    /// The parameters which are shared with the VST host
-    params: Arc<RawParameters>,
+        params: Arc<KarplusParameters>
 }
 
-/*
-impl fmt::Display for Karplus {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}, {})", self.frequency, self.sample_rate)
-    }
+#[derive(Default)]
+struct KarplusParameters {
+    frequency: f32,
+    gain: f32,
+    sample_rate: u32,
+    notes: u8,
 }
-*/
 
 impl Plugin for Karplus {
     
@@ -46,6 +42,10 @@ impl Plugin for Karplus {
 
             ..Info::default()
         }
+    }
+    
+    fn get_parameter_object(&mut self) -> Arc<dyn PluginParameters> {
+        Arc::clone(&self.params) as Arc<dyn PluginParameters>
     }
     
     fn new(host: HostCallback) -> Self {
@@ -158,41 +158,36 @@ impl Plugin for Karplus {
     */
 }
 
-impl PluginParameters for Karplus {
-    
+impl PluginParameters for KarplusParameters {
     fn get_parameter(&self, index: i32) -> f32 {
         match index {
-            0 => self.frequency,
+            0 => self.freequency.get(),
+            1 => self.gain.get(),
             _ => 0.0,
         }
     }
 
     fn set_parameter(&self, index: i32, value: f32) {
-        //        match index {
-        //            // We don't want to divide by zero, so we'll clamp the value
-        //            0 => self.threshold = value.max(0.01),
-        //            _ => (),
-        //        }
+        #[allow(clippy::single_match)]
+        match index {
+            0 => self.frequency.set(value.max(0.01)),
+            1 => self.gain.set(value),
+            _ => (),
+        }
     }
 
     fn get_parameter_name(&self, index: i32) -> String {
         match index {
             0 => "Frequency".to_string(),
+            1 => "Gain".to_string(),
             _ => "".to_string(),
         }
     }
 
     fn get_parameter_text(&self, index: i32) -> String {
         match index {
-            // Convert to a percentage
-            0 => format!("{}", self.frequency),
-            _ => "".to_string(),
-        }
-    }
-
-    fn get_parameter_label(&self, index: i32) -> String {
-        match index {
-            0 => "%".to_string(),
+            0 => format!("{:.2}", self.frequency.get()),
+            1 => format!("{:.2}", self.gain.get()),
             _ => "".to_string(),
         }
     }
