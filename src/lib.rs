@@ -10,17 +10,6 @@ use vst::{
     editor::Editor,
     plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
 };
-use wmidi::MidiMessage;
-
-use params::{
-    CountedEnum, EnvelopeParams, ModBankEnvs, ModulationBank, ModulationSend, ModulationType,
-    OSCParams, ParameterType, Parameters, RawParameters,
-};
-use sound_gen::{
-    normalize_U7, normalize_pitch_bend, to_pitch_envelope, NormalizedPitchbend, SampleRate,
-    SoundGenerator,
-};
-use ui::UIFrontEnd;
 
 use rand::random;
 
@@ -29,12 +18,9 @@ struct Karplus {
     frequency: f32,
     sample_rate: u32,
     buffer: Vec<f32>,
-    notes: u8
+    notes: u8,
     /// The parameters which are shared with the VST host
     params: Arc<RawParameters>,
-    /// If true, then the GUI has been initalized and `get_editor()` will return
-    /// None.
-    gui_initialized: bool,
 }
 
 /*
