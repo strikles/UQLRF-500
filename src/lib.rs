@@ -15,18 +15,34 @@ use vst::{
 
 use rand::random;
 
+#[derive(Debug, Copy, Clone)]
+struct Note {
+    alpha: f64,
+    note: u8,
+    is_released: bool,
+}
+
 #[derive(Default)]
 struct Karplus {
-        params: Arc<KarplusParameters>,
-        notes: u8
+    params: Arc<KarplusParameters>,
+    notes: Vec<Note>,
+    sample_rate: f32,
+    time: f64
 }
 
 #[derive(Default)]
 struct KarplusParameters {
     frequency: AtomicFloat,
     gain: AtomicFloat,
-    sample_rate: u32,
     host: HostCallback
+}
+
+pub fn midi_pitch_to_freq(pitch: u8) -> f64 {
+    const A4_PITCH: i8 = 69;
+    const A4_FREQ: f64 = 440.0;
+
+    // Midi notes can be 0-127
+    ((f64::from(pitch as i8 - A4_PITCH)) / 12.).exp2() * A4_FREQ
 }
 
 impl Plugin for Karplus {
@@ -39,7 +55,9 @@ impl Plugin for Karplus {
 
             inputs: 2,
             outputs: 2,
-            parameters: 1,
+            parameters: 2,
+            
+            category: Category::Synth,
 
             ..Info::default()
         }
@@ -59,65 +77,86 @@ impl Plugin for Karplus {
         }
     }
     
-    // Here's the function that allows us to receive events
     fn process_events(&mut self, events: &Events) {
-
-        // Some events aren't MIDI events - so let's do a match
-        // to make sure we only get MIDI, since that's all we care about.
         for event in events.events() {
             match event {
                 Event::Midi(ev) => {
-
-                    // Check if it's a noteon or noteoff event.
-                    // This is difficult to explain without knowing how the MIDI standard works.
-                    // Basically, the first byte of data tells us if this signal is a note on event
-                    // or a note off event.  You can read more about that here: 
-                    // https://www.midi.org/specifications/item/table-1-summary-of-midi-message
                     match ev.data[0] {
-
-                        // if note on, increment our counter
-                        144 => self.notes += 1u8,
-
-                        // if note off, decrement our counter
-                        128 => self.notes -= 1u8,
-                        _ => (),
+                        144 => {
+                            self.notes.push(Note { note: ev.data[1], alpha: 0.0, is_released: false });
+                        }
+                        128 => {
+                            for note in self.notes.iter_mut() {
+                                if note.note == ev.data[1] {
+                                    note.is_released = true;
+                                }
+                            }
+                        }
+                        _ => ()
                     }
-                    // if we cared about the pitch of the note, it's stored in `ev.data[1]`.
-                },
-                // We don't care if we get any other type of event
-                _ => (),
+                }
+
+                _ => ()
             }
         }
     }
 
+    fn set_sample_rate(&mut self, rate: f32) {
+        self.sample_rate = rate;
+    }
+    
     fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
+        let samples = buffer.samples();
+        let (_, mut outputs) = buffer.split();
+        let output_count = outputs.len();
 
-        // `buffer.split()` gives us a tuple containing the 
-        // input and output buffers.  We only care about the
-        // output, so we can ignore the input by using `_`.
-        let (_, mut output_buffer) = buffer.split();
+        let per_sample = (1.0 / self.sample_rate) as f64;
+        let attack_per_sample = per_sample * (1.0 / self.params.attack_duration.get() as f64);
+        let release_per_sample = per_sample * (1.0 / self.params.release_duration.get() as f64);
 
-        // We only want to process *anything* if a note is being held.
-        // Else, we can fill the output buffer with silence.
-        if self.notes == 0 {
-            for output_channel in output_buffer.into_iter() {
-                // Let's iterate over every sample in our channel.
-                for output_sample in output_channel {
-                    *output_sample = 0.0;
+
+        let mut output_sample;
+        for sample_idx in 0..samples {
+
+
+            // Update the alpha of each note...
+            for note in self.notes.iter_mut() {
+                if !note.is_released && note.alpha < 1.0 {
+                    note.alpha += attack_per_sample;
+                }
+
+                if note.is_released {
+                    note.alpha -= release_per_sample;
                 }
             }
-            return;
-        }
 
-        // Now, we want to loop over our output channels.  This
-        // includes our left and right channels (or more, if you
-        // are working with surround sound).
-        for output_channel in output_buffer.into_iter() {
-            // Let's iterate over every sample in our channel.
-            for output_sample in output_channel {
-                // For every sample, we want to generate a random value
-                // from -1.0 to 1.0.
-                *output_sample = (random::<f32>() - 0.5f32) * 2f32;
+            // ...and remove finished notes.
+            self.notes.retain(|n| n.alpha > 0.0);
+
+
+            // Sum up all the different notes and noise types
+            if !self.notes.is_empty() {
+                let mut signal = 0.0;
+                let params = self.params.deref();
+
+                for note in &self.notes {
+                    let point = [0.0, self.time * midi_pitch_to_freq(note.note)];
+
+                    if note.alpha > 0.0001 {
+                        signal += ((random::<f64>() - 0.5) * 2.0 as f64 * note.alpha;
+                    }
+                }
+
+                output_sample = signal as f32;
+                self.time += per_sample;
+                
+            } else {
+                output_sample = 0.0;
+            }
+
+            for buf_idx in 0..output_count {
+                let buff = outputs.get_mut(buf_idx);
+                buff[sample_idx] = output_sample;
             }
         }
     }
