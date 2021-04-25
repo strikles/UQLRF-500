@@ -1,7 +1,10 @@
 extern crate rand;
+extern crate vst2;
 
 use rand::Rng;
 use std::fmt;
+use vst::buffer::AudioBuffer;
+use vst::plugin::{Plugin, Info};
 
 pub struct Karplus {
     frequency: f32,
@@ -38,6 +41,82 @@ impl fmt::Display for Karplus {
         write!(f, "({}, {})", self.frequency, self.sample_rate)
     }
 }
+
+impl Default for Karplus {
+    fn default() -> Self {
+        Karplus {
+            frequency: 440.0,
+            sample_rate: 44100
+        }
+    }
+}
+
+
+impl Plugin for Karplus {
+    fn get_info(&self) -> Info {
+        Info {
+            name: "UQLRF".to_string(),
+            vendor: "strikles".to_string(),
+            unique_id: 999,
+
+            inputs: 2,
+            outputs: 2,
+            parameters: 2,
+
+            ..Info::default()
+        }
+    }
+
+    fn get_parameter_label(&self, index: i32) -> String {
+        match index {
+            0 => "%".to_string(),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_parameter_text(&self, index: i32) -> String {
+        match index {
+            0 => format!("{}", self.frequency),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_parameter_name(&self, index: i32) -> String {
+        match index {
+            0 => "Frequency".to_string(),
+            _ => "".to_string(),
+        }
+
+    }
+
+    fn get_parameter(&self, index: i32) -> f32 {
+        match index {
+            0 => self.frequency,
+            _ => 0.0,
+        }
+    }
+
+    fn set_parameter(&mut self, index: i32, value: f32) {
+        match index {
+            0 => self.frequency = value.max(0.01),
+            _ => (),
+        };
+    }
+
+    fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
+        for (input, output) in buffer.zip() {
+            // For each input sample and output sample in buffer
+            for (in_frame, out_frame) in input.into_iter().zip(output.into_iter()) {
+                if *in_frame >= 0.0 {
+                    let k = Karplus::new(self.frequency, self.sample_rate);
+                    *out_frame = in_frame.min(self.frequency)
+                }
+            }
+        }
+    }
+}
+
+plugin_main!(DigiDist);
 
 #[cfg(test)]
 mod tests {
