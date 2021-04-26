@@ -1,6 +1,8 @@
 # UQLRF-500
 Karplus-Strong VST
 
+![](doc/IMG_1831.PNG)
+
 ## [Ut Queant Laxis Resonare Fibris](https://en.wikipedia.org/wiki/Ut_queant_laxis)
 
 '''
