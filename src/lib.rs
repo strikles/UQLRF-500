@@ -26,7 +26,7 @@ struct Karplus {
     params: Arc<KarplusParameters>,
     notes: Vec<Note>,
     sample_rate: f32,
-    time: f64
+    time: f64,
     // Noise functions
     fn_perlin: Perlin,
     fn_value: Value,
@@ -242,10 +242,6 @@ impl Plugin for Karplus {
                 buff[sample_idx] = 0.5 * (output_sample + prev_output_sample) * params.distortion.get();
             }
         }
-    }
-
-    fn get_parameter_object(&mut self) -> Arc<dyn PluginParameters> {
-        Arc::clone(&self.params) as Arc<dyn PluginParameters>
     }
 
     // It's good to tell our host what our plugin can do.

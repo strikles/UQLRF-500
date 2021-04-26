@@ -11,3 +11,4 @@ license = "MIT"
 [dependencies]
 rand = "0.3.14"
 vst = { git = "https://github.com/rust-dsp/rust-vst" }
+noise = "0.6.0"
