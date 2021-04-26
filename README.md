@@ -1,5 +1,5 @@
-# UQLRF-500
-Karplus-Strong VST ![rust](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+# UQLRF-500 ![rust](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+Karplus-Strong VST
 
 ![](doc/IMG_1831.PNG)
 
