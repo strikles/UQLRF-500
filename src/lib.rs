@@ -247,7 +247,6 @@ impl Plugin for Karplus {
     fn get_parameter_object(&mut self) -> Arc<dyn PluginParameters> {
         Arc::clone(&self.params) as Arc<dyn PluginParameters>
     }
-}
 
     // It's good to tell our host what our plugin can do.
     // Some VST hosts might not send any midi events to our plugin
