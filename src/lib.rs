@@ -352,6 +352,7 @@ impl Default for KarplusParameters {
             attack_duration: AtomicFloat::new(0.5),
             release_duration: AtomicFloat::new(0.5),
             distortion: AtomicFloat::new(1.0),
+            host:   HostCallback::default(),
         }
     }
 }
