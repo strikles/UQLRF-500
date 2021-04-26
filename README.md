@@ -17,4 +17,5 @@ in memory of my grandparents and St. John the Baptist
 
 **_Deus Caritas Est_** <3
 
-[https://crypto.stanford.edu/~blynn/sound/karplusstrong.html](https://crypto.stanford.edu/~blynn/sound/karplusstrong.html)
+0. [https://crypto.stanford.edu/~blynn/sound/karplusstrong.html](https://crypto.stanford.edu/~blynn/sound/karplusstrong.html)
+0. [https://www.math.drexel.edu/~dp399/musicmath/Karplus-Strong.html](https://www.math.drexel.edu/~dp399/musicmath/Karplus-Strong.html)
