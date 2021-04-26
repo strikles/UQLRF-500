@@ -1,5 +1,5 @@
 # UQLRF-500
-Karplus-Strong VST
+Karplus-Strong VST ![rust](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
 
 ![](doc/IMG_1831.PNG)
 
@@ -21,7 +21,5 @@ in memory of my grandparents and St. John the Baptist
 
 0. [https://crypto.stanford.edu/~blynn/sound/karplusstrong.html](https://crypto.stanford.edu/~blynn/sound/karplusstrong.html)
 0. [https://www.math.drexel.edu/~dp399/musicmath/Karplus-Strong.html](https://www.math.drexel.edu/~dp399/musicmath/Karplus-Strong.html)
-
-![rust](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
 
 **_Deus Caritas Est_** <3
