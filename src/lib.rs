@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate vst;
 extern crate rand;
+extern crate noise;
 
 use std::{sync::Arc, ops::Deref};
 
@@ -12,6 +13,8 @@ use vst::{
     plugin::{CanDo, Category, HostCallback, Info, Plugin, PluginParameters},
     util::AtomicFloat
 };
+
+use noise::{NoiseFn, Perlin, Worley, Billow, Cylinders, OpenSimplex, RidgedMulti, Value, HybridMulti, BasicMulti};
 
 use rand::random;
 
@@ -40,9 +43,6 @@ struct Karplus {
 }
 
 pub struct KarplusParameters {
-    pub distortion: AtomicFloat,
-    pub attack_duration: AtomicFloat,
-    pub release_duration: AtomicFloat,
     // Amounts
     pub a_white_noise: AtomicFloat,
     pub a_perlin: AtomicFloat,
@@ -54,9 +54,9 @@ pub struct KarplusParameters {
     pub a_cylinders: AtomicFloat,
     pub a_hybrid_multi: AtomicFloat,
     pub a_basic_multi: AtomicFloat,
-
     pub attack_duration: AtomicFloat,
     pub release_duration: AtomicFloat,
+    pub distortion: AtomicFloat,
     pub host: HostCallback
 }
 
@@ -239,7 +239,7 @@ impl Plugin for Karplus {
 
             for buf_idx in 0..output_count {
                 let buff = outputs.get_mut(buf_idx);
-                buff[sample_idx] = 0.5 * (output_sample + prev_output_sample) * params.distortion.get();
+                buff[sample_idx] = 0.5 * (output_sample + prev_output_sample) * self.params.distortion.get();
             }
         }
     }
