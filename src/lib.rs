@@ -241,6 +241,8 @@ impl Plugin for Karplus {
                 let buff = outputs.get_mut(buf_idx);
                 buff[sample_idx] = 0.5 * (output_sample + prev_output_sample) * self.params.distortion.get();
             }
+            
+            prev_output_sample = output_sample;
         }
     }
 
