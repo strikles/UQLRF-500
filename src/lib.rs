@@ -351,7 +351,7 @@ impl Default for KarplusParameters {
             a_basic_multi: AtomicFloat::new(0.0),
             attack_duration: AtomicFloat::new(0.5),
             release_duration: AtomicFloat::new(0.5),
-            release_duration: AtomicFloat::new(1.0),
+            distortion: AtomicFloat::new(1.0),
         }
     }
 }
