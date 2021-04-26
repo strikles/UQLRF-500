@@ -116,6 +116,7 @@ impl Plugin for Karplus {
         let release_per_sample = per_sample * (1.0 / self.params.release_duration.get() as f64);
 
         let mut output_sample;
+        let mut prev_output_sample = 0.0;
         for sample_idx in 0..samples {
 
             // Update the alpha of each note...
@@ -154,8 +155,10 @@ impl Plugin for Karplus {
 
             for buf_idx in 0..output_count {
                 let buff = outputs.get_mut(buf_idx);
-                buff[sample_idx] = output_sample;
+                buff[sample_idx] = 0.5 * (output_sample + prev_output_sample)
             }
+            
+            prev_output_sample = output_sample;
         }
     }
 
