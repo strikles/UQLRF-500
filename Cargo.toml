@@ -1,5 +1,5 @@
 [package]
-name = "UQLRF-500"
+name = "UQLRF500"
 version = "0.1.1"
 authors = ["strikles <strikles@gmail.com>"]
 description = "Karplus-Strong algorithm implementation."
@@ -12,3 +12,7 @@ license = "MIT"
 rand = "0.3.14"
 vst = { git = "https://github.com/rust-dsp/rust-vst" }
 noise = "0.6.0"
+
+[lib]
+name = "UQLRF500"
+crate-type = ["cdylib"]
