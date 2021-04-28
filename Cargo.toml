@@ -1,11 +1,11 @@
 [package]
-name = "karplus"
-version = "0.1.0"
-authors = ["Adriano Orioli <orioli.adriano@gmail.com>"]
+name = "UQLRF-500"
+version = "0.1.1"
+authors = ["strikles <strikles@gmail.com>"]
 description = "Karplus-Strong algorithm implementation."
-repository = "https://github.com/Aorioli/karplus"
+repository = "https://github.com/strikles/UQLRF-500"
 readme = "README.md"
-keywords = ["karplus", "sound", "synthesis"]
+keywords = ["karplus", "sound", "synthesis", "vst"]
 license = "MIT"
 
 [dependencies]
