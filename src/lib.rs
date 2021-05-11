@@ -102,7 +102,7 @@ impl Plugin for Karplus {
 
             inputs: 2,
             outputs: 2,
-            parameters: 2,
+            parameters: 13,
             
             category: Category::Synth,
 
