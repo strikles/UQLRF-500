@@ -56,7 +56,7 @@ pub struct KarplusParameters {
     pub a_basic_multi: AtomicFloat,
     pub attack_duration: AtomicFloat,
     pub release_duration: AtomicFloat,
-    pub distortion: AtomicFloat,
+    pub damping: AtomicFloat,
     pub host: HostCallback
 }
 
@@ -162,7 +162,6 @@ impl Plugin for Karplus {
         let release_per_sample = per_sample * (1.0 / self.params.release_duration.get() as f64);
 
         let mut output_sample;
-        let mut prev_output_sample = 0.0;
         for sample_idx in 0..samples {
 
             // Update the alpha of each note...
@@ -179,12 +178,10 @@ impl Plugin for Karplus {
             // ...and remove finished notes.
             self.notes.retain(|n| n.alpha > 0.0);
 
-
             // Sum up all the different notes and noise types
             if !self.notes.is_empty() {
                 let mut signal = 0.0;
                 let params = self.params.deref();
-
 
                 for note in &self.notes {
                     let point = [0.0, self.time * midi_pitch_to_freq(note.note)];
@@ -230,19 +227,31 @@ impl Plugin for Karplus {
                     }
                 }
 
-
                 output_sample = signal as f32;
                 self.time += per_sample;
             } else {
                 output_sample = 0.0;
             }
 
+            // copy noise to buff
             for buf_idx in 0..output_count {
                 let buff = outputs.get_mut(buf_idx);
-                buff[sample_idx] = 0.5 * (output_sample + prev_output_sample) * self.params.distortion.get();
+                buff[sample_idx] = output_sample;
             }
-            
-            prev_output_sample = output_sample;
+        }
+        for sample_idx in 0..samples {
+            // hmmm
+            if !self.notes.is_empty() {
+                for note in &self.notes {
+                    //let num = self.sample_rate / midi_pitch_to_freq(note.note);
+                }
+            }
+            // ks
+            for buf_idx in 0..output_count {
+                let buff = outputs.get_mut(buf_idx);
+                let n = 200;
+                buff[sample_idx] = 0.5 * self.params.damping.get() * (buff[sample_idx % n] + buff[(sample_idx + 1) % n]);
+            }
         }
     }
 
@@ -275,7 +284,7 @@ impl PluginParameters for KarplusParameters {
             9 => format!("{:.1}%", self.a_basic_multi.get() * 100.0),
             10 => format!("{:.1}s", self.attack_duration.get()),
             11 => format!("{:.1}s", self.release_duration.get()),
-            12 => format!("{:.1}s", self.distortion.get()),
+            12 => format!("{:.1}s", self.damping.get()),
             _ => "".to_string(),
         }
     }
@@ -294,7 +303,7 @@ impl PluginParameters for KarplusParameters {
             9 => "BasicMulti",
             10 => "Attack",
             11 => "Release",
-            12 => "Distortion",
+            12 => "Damping",
             _ => "",
         }.to_string()
     }
@@ -313,7 +322,7 @@ impl PluginParameters for KarplusParameters {
             9 => self.a_basic_multi.get(),
             10 => self.attack_duration.get(),
             11 => self.release_duration.get(),
-            12 => self.distortion.get(),
+            12 => self.damping.get(),
             _ => 0.0,
         }
     }
@@ -332,7 +341,7 @@ impl PluginParameters for KarplusParameters {
             9 => self.a_basic_multi.set(val),
             10 => self.attack_duration.set(val.max(0.001)), // prevent division by zero
             11 => self.release_duration.set(val.max(0.001)),
-            12 => self.distortion.set(val),
+            12 => self.damping.set(val),
             _ => (),
         }
     }
@@ -353,7 +362,7 @@ impl Default for KarplusParameters {
             a_basic_multi: AtomicFloat::new(0.0),
             attack_duration: AtomicFloat::new(0.5),
             release_duration: AtomicFloat::new(0.5),
-            distortion: AtomicFloat::new(1.0),
+            damping: AtomicFloat::new(0.996),
             host:   HostCallback::default(),
         }
     }
