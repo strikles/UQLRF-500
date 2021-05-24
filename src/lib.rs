@@ -187,7 +187,7 @@ impl Plugin for Karplus {
                     let point = [0.0, self.time * midi_pitch_to_freq(note.note)];
 
                     if params.a_white_noise.get() > 0.0 && note.alpha > 0.0001 {
-                        signal += ((random::<f64>() - 0.5) * 2.0) * params.a_white_noise.get() as f64 * note.alpha;
+                        signal += (random::<f64>() * 2.0 - 1.0) * params.a_white_noise.get() as f64 * note.alpha;
                     }
 
                     if params.a_perlin.get() > 0.0 && note.alpha > 0.0001 {
@@ -239,18 +239,19 @@ impl Plugin for Karplus {
                 buff[sample_idx] = output_sample;
             }
         }
-        for sample_idx in 0..samples {
+
             // hmmm
-            if !self.notes.is_empty() {
-                for note in &self.notes {
-                    //let num = self.sample_rate / midi_pitch_to_freq(note.note);
+        if !self.notes.is_empty() {
+            for note in &self.notes {
+                //let num = self.sample_rate / midi_pitch_to_freq(note.note);
+                for sample_idx in 0..samples {
+                    // ks
+                    for buf_idx in 0..output_count {
+                        let buff = outputs.get_mut(buf_idx);
+                        let n = 200;
+                        buff[sample_idx] = self.params.damping.get() * 0.5 * (buff[sample_idx % n] + buff[(1 + sample_idx) % n]);
+                    }
                 }
-            }
-            // ks
-            for buf_idx in 0..output_count {
-                let buff = outputs.get_mut(buf_idx);
-                let n = 200;
-                buff[sample_idx] = 0.5 * self.params.damping.get() * (buff[sample_idx % n] + buff[(sample_idx + 1) % n]);
             }
         }
     }
