@@ -2,6 +2,7 @@
 extern crate vst;
 extern crate rand;
 extern crate noise;
+extern crate karplus;
 
 use std::{sync::Arc, ops::Deref};
 
@@ -14,6 +15,8 @@ use vst::{
     util::AtomicFloat
 };
 
+use karplus::Karplus;
+
 use noise::{NoiseFn, Perlin, Worley, Billow, Cylinders, OpenSimplex, RidgedMulti, Value, HybridMulti, BasicMulti};
 
 use rand::random;
@@ -25,8 +28,8 @@ struct Note {
     is_released: bool,
 }
 
-struct Karplus {
-    params: Arc<KarplusParameters>,
+struct Karpluz {
+    params: Arc<KarpluzParameters>,
     notes: Vec<Note>,
     sample_rate: f32,
     time: f64,
@@ -42,7 +45,7 @@ struct Karplus {
     fn_basic_multi: BasicMulti,
 }
 
-pub struct KarplusParameters {
+pub struct KarpluzParameters {
     // Amounts
     pub a_white_noise: AtomicFloat,
     pub a_perlin: AtomicFloat,
@@ -68,14 +71,14 @@ pub fn midi_pitch_to_freq(pitch: u8) -> f64 {
     ((f64::from(pitch as i8 - A4_PITCH)) / 12.).exp2() * A4_FREQ
 }
 
-impl Default for Karplus {
-    fn default() -> Karplus {
-        Karplus {
+impl Default for Karpluz {
+    fn default() -> Karpluz {
+        Karpluz {
             notes: vec![],
             sample_rate: 44100.0,
             time: 0.0,
             // Amounts
-            params: Arc::new(KarplusParameters::default()),
+            params: Arc::new(KarpluzParameters::default()),
 
             // Noise functions
             fn_perlin: Perlin::new(),
@@ -92,7 +95,7 @@ impl Default for Karplus {
 }
 
 
-impl Plugin for Karplus {
+impl Plugin for Karpluz {
     
     fn get_info(&self) -> Info {
         Info {
@@ -119,8 +122,8 @@ impl Plugin for Karplus {
     }
     
     fn new(host: HostCallback) -> Self {
-        Karplus {
-            params: Arc::new(KarplusParameters {
+        Karpluz {
+            params: Arc::new(KarpluzParameters {
                 host,
                 ..Default::default()
             }),
@@ -152,7 +155,8 @@ impl Plugin for Karplus {
         }
     }
 
-    fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
+    /*
+        fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
         let samples = buffer.samples();
         let (_, mut outputs) = buffer.split();
         let output_count = outputs.len();
@@ -255,6 +259,27 @@ impl Plugin for Karplus {
             }
         }
     }
+    */
+
+    fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
+        let samples = buffer.samples();
+        let (_, mut outputs) = buffer.split();
+        let output_count = outputs.len();
+
+        for buf_idx in 0..output_count {
+            let out = outputs.get_mut(buf_idx);
+            let params = self.params.deref();
+            if !self.notes.is_empty() {
+                for note in &self.notes {
+                    let mut k = Karplus::new(midi_pitch_to_freq(note.note) as f32, self.sample_rate as u32);
+                    //let mut k = Karplus::new(440.0, self.sample_rate as u32);
+                    for sample_idx in 0..samples {
+                        out[sample_idx] = k.sample(0.996);
+                    }
+                }
+            }
+        }
+    }
 
     // It's good to tell our host what our plugin can do.
     // Some VST hosts might not send any midi events to our plugin
@@ -270,7 +295,7 @@ impl Plugin for Karplus {
 }
 
 
-impl PluginParameters for KarplusParameters {
+impl PluginParameters for KarpluzParameters {
     fn get_parameter_text(&self, index: i32) -> String {
         match index {
             0 => format!("{:.1}%", self.a_white_noise.get() * 100.0),
@@ -348,9 +373,9 @@ impl PluginParameters for KarplusParameters {
     }
 }
 
-impl Default for KarplusParameters {
-    fn default() -> KarplusParameters {
-        KarplusParameters {
+impl Default for KarpluzParameters {
+    fn default() -> KarpluzParameters {
+        KarpluzParameters {
             a_white_noise: AtomicFloat::new(1.0),
             a_perlin: AtomicFloat::new(0.0),
             a_value: AtomicFloat::new(0.0),
@@ -369,4 +394,4 @@ impl Default for KarplusParameters {
     }
 }
 
-plugin_main!(Karplus);
+plugin_main!(Karpluz);

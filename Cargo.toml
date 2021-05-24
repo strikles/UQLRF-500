@@ -12,6 +12,7 @@ license = "MIT"
 rand = "0.3.14"
 vst = { git = "https://github.com/rust-dsp/rust-vst" }
 noise = "0.6.0"
+karplus = "0.1.0"
 
 [lib]
 name = "uqlrf500"
