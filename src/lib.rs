@@ -113,32 +113,33 @@ impl Plugin for SineSynth {
         let output_count = outputs.len();
         let per_sample = self.time_per_sample();
         let mut output_sample;
-        for sample_idx in 0..samples {
-            let time = self.time;
-            let note_duration = self.note_duration;
+        for buf_idx in 0..output_count {
+            let buff = outputs.get_mut(buf_idx);
             if let Some(current_note) = self.note {
                 let mut k = Karplus::new(midi_pitch_to_freq(current_note) as f32, self.sample_rate as u32);
-                let signal = k.sample(0.996);
-                //let signal = (time * midi_pitch_to_freq(current_note) * TAU).sin();
+                for sample_idx in 0..samples {
+                    let time = self.time;
+                    let note_duration = self.note_duration;
+                    let signal = k.sample(0.996);
+                    //let signal = (time * midi_pitch_to_freq(current_note) * TAU).sin();
+                    // Apply a quick envelope to the attack of the signal to avoid popping.
+                    let attack = 0.5;
+                    let alpha = if note_duration < attack {
+                        note_duration / attack
+                    } else {
+                        1.0
+                    };
 
-                // Apply a quick envelope to the attack of the signal to avoid popping.
-                let attack = 0.5;
-                let alpha = if note_duration < attack {
-                    note_duration / attack
-                } else {
-                    1.0
-                };
+                    output_sample = signal * alpha as f32;
+                    self.time += per_sample;
+                    self.note_duration += per_sample;
 
-                output_sample = signal * alpha as f32;
-
-                self.time += per_sample;
-                self.note_duration += per_sample;
+                    buff[sample_idx] = output_sample;
+                }
             } else {
-                output_sample = 0.0;
-            }
-            for buf_idx in 0..output_count {
-                let buff = outputs.get_mut(buf_idx);
-                buff[sample_idx] = output_sample;
+                for sample_idx in 0..samples {
+                    buff[sample_idx] = 0.0;
+                }
             }
         }
     }
