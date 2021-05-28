@@ -8,7 +8,6 @@ use vst::api::{Events, Supported};
 use vst::buffer::AudioBuffer;
 use vst::event::Event;
 use vst::plugin::{CanDo, Category, HostCallback, Info, Plugin};
-
 use karplus::Karplus;
 use std::f64::consts::PI;
 
@@ -118,10 +117,8 @@ impl Plugin for SineSynth {
             let time = self.time;
             let note_duration = self.note_duration;
             let mut k = Karplus::new(midi_pitch_to_freq(current_note) as f32, self.sample_rate as u32);
-            //k.buffer = vec![1.0, 0.0];
             for sample_idx in 0..samples {
                 let signal = k.sample(0.996);
-                //let signal = (time * midi_pitch_to_freq(current_note) * TAU).sin();
                 // Apply a quick envelope to the attack of the signal to avoid popping.
                 let attack = 0.5;
                 let alpha = if note_duration < attack {
@@ -129,15 +126,13 @@ impl Plugin for SineSynth {
                 } else {
                     1.0
                 };
-
-                output_sample = signal * alpha as f32;
-                self.time += per_sample;
-                self.note_duration += per_sample;
-
+                output_sample = signal; //(signal * alpha) as f32;
                 for buf_idx in 0..output_count {
                     let buff = outputs.get_mut(buf_idx);
                     buff[sample_idx] = output_sample;
                 }
+                self.time += per_sample;
+                self.note_duration += per_sample;
             }
         } else {
             for sample_idx in 0..samples {
