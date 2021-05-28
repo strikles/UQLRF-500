@@ -115,11 +115,10 @@ impl Plugin for SineSynth {
         let mut output_sample;
 
         if let Some(current_note) = self.note {
-
+            let time = self.time;
+            let note_duration = self.note_duration;
             let mut k = Karplus::new(midi_pitch_to_freq(current_note) as f32, self.sample_rate as u32);
             for sample_idx in 0..samples {
-                let time = self.time;
-                let note_duration = self.note_duration;
                 let signal = k.sample(0.996);
                 //let signal = (time * midi_pitch_to_freq(current_note) * TAU).sin();
                 // Apply a quick envelope to the attack of the signal to avoid popping.
