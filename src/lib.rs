@@ -118,7 +118,7 @@ impl Plugin for SineSynth {
             let time = self.time;
             let note_duration = self.note_duration;
             let mut k = Karplus::new(midi_pitch_to_freq(current_note) as f32, self.sample_rate as u32);
-            k.buffer = vec![1.0, 0.0];
+            //k.buffer = vec![1.0, 0.0];
             for sample_idx in 0..samples {
                 let signal = k.sample(0.996);
                 //let signal = (time * midi_pitch_to_freq(current_note) * TAU).sin();
